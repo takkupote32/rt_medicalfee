@@ -5,23 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>放射線治療 診療報酬シミュレーター</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f7f6; color: #333; margin: 0; padding: 15px; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { font-size: 1.2rem; border-bottom: 2px solid #ff4b4b; padding-bottom: 10px; }
-        label { display: block; margin: 15px 0 5px; font-weight: bold; font-size: 0.9rem; }
-        select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .radio-group { display: flex; gap: 5px; margin-bottom: 10px; }
-        .radio-group label { flex: 1; text-align: center; background: #eee; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #F0F2F6; color: #31333F; margin: 0; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h2 { color: #111; border-bottom: 2px solid #ff4b4b; padding-bottom: 8px; margin-top: 0; font-size: 1.2rem; }
+        
+        /* フォーム部品 */
+        label { display: block; margin: 12px 0 6px; font-size: 0.9rem; font-weight: bold; }
+        select, input[type="number"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .radio-group { display: flex; gap: 5px; }
+        .radio-group label { flex: 1; text-align: center; background: #eee; padding: 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
         input[type="radio"]:checked + label { background: #ff4b4b; color: white; }
         input[type="radio"] { display: none; }
-        
-        /* 展開エリア */
-        #expanded_content { display: none; background: #fff8f8; padding: 15px; border-left: 4px solid #ff4b4b; margin-top: 15px; }
-        
-        /* 結果表示 */
-        .result-box { margin-top: 20px; padding: 15px; background: #333; color: #fff; border-radius: 8px; }
-        .price { font-size: 1.8rem; font-weight: bold; color: #ffeb3b; }
-        pre { font-size: 0.75rem; color: #ddd; white-space: pre-wrap; }
+
+        /* 追加項目展開エリア */
+        .expand-section { margin: 20px 0; border: 1px solid #ddd; border-radius: 6px; overflow: hidden; }
+        .expand-header { background: #f8f8f8; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; font-weight: bold; }
+        #expanded_content { display: none; padding: 15px; border-top: 1px solid #ddd; background: #fff; }
+
+        /* 結果エリア */
+        .result-box { margin-top: 20px; padding: 15px; background: #333; color: white; border-radius: 6px; }
+        .total-price { font-size: 1.8rem; font-weight: bold; color: #ffeb3b; }
+        pre { font-size: 0.75rem; color: #ddd; white-space: pre-wrap; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -39,24 +43,25 @@
         <input type="radio" name="ratio" id="r3" value="3" checked><label for="r3">3割</label>
     </div>
 
-    <div style="margin-top:20px;">
-        <input type="checkbox" id="is_expanded" onchange="toggleExpand()">
-        <label style="display:inline;" for="is_expanded">▼ 追加項目を展開して計算</label>
-    </div>
-
-    <div id="expanded_content">
-        <label><input type="checkbox" id="check_extra_2" onchange="onCheckExtra2Changed()"> 2回目の追加分として計算</label>
-        <label>追加方法</label>
-        <select id="ex_method" onchange="calculateAll()"></select>
-        <div id="ex_count_container">
-            <label id="ex_count_label">回数:</label>
-            <input type="number" id="ex_count_input" value="1" oninput="calculateAll()">
+    <div class="expand-section">
+        <div class="expand-header" onclick="document.getElementById('is_expanded').click()">
+            追加分の計算 <span>▼</span>
+        </div>
+        <input type="checkbox" id="is_expanded" style="display:none" onchange="toggleExpand()">
+        <div id="expanded_content">
+            <label><input type="checkbox" id="check_extra_2" onchange="onCheckExtra2Changed()"> 2回目の追加分として計算</label>
+            <label>追加方法</label>
+            <select id="ex_method" onchange="calculateAll()"></select>
+            <div id="ex_count_container">
+                <label id="ex_count_label">回数:</label>
+                <input type="number" id="ex_count_input" value="1" oninput="calculateAll()">
+            </div>
         </div>
     </div>
 
     <div class="result-box">
         <div>窓口負担額 (概算)</div>
-        <div class="price" id="total_pay">¥ 0</div>
+        <div class="total-price" id="total_pay">¥ 0</div>
         <pre id="detail_output"></pre>
     </div>
 </div>
