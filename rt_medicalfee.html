@@ -5,117 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>放射線治療 シミュレーター 2026</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --accent: #e11d48;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            margin: 0;
-            padding: 20px;
-        }
-
+        :root { --primary: #2563eb; --accent: #e11d48; --bg: #f8fafc; --card: #ffffff; --text: #1e293b; --border: #e2e8f0; }
+        body { font-family: sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; }
-
-        .card {
-            background: var(--card);
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-            margin-bottom: 24px;
-            border: 1px solid var(--border);
-        }
-
-        h2 { font-size: 1.5rem; margin-top: 0; color: var(--primary); }
-        h3 { font-size: 1.1rem; border-left: 4px solid var(--primary); padding-left: 12px; margin: 20px 0; }
-
-        select, input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 16px;
-            background: #fff;
-        }
-
-        .radio-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .radio-inline {
-            background: var(--bg);
-            padding: 10px;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            border: 1px solid var(--border);
-        }
-
-        .radio-inline:has(input:checked) {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-        }
-
-        .result-panel {
-            background: #f1f5f9;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .result-val { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
-
-        pre {
-            background: #1e293b;
-            color: #f8fafc;
-            padding: 16px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-size: 13px;
-        }
+        .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .result-val { font-size: 2rem; font-weight: bold; color: var(--accent); }
+        pre { background: #1e293b; color: #fff; padding: 15px; border-radius: 8px; font-size: 13px; overflow-x: auto; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="card">
-        <h2>⚛️ 放射線治療シミュレーター 2026</h2>
+        <h2>放射線治療シミュレーター</h2>
         
-        <h3>基本設定</h3>
         <label>照射方法</label>
         <select id="main_method" onchange="calculateAll()"></select>
 
         <label>患者負担割合</label>
-        <div class="radio-group" onchange="calculateAll()">
-            <label class="radio-inline"><input type="radio" name="ratio" value="1"> 1割</label>
-            <label class="radio-inline"><input type="radio" name="ratio" value="2"> 2割</label>
-            <label class="radio-inline"><input type="radio" name="ratio" value="3" checked> 3割</label>
+        <div>
+            <input type="radio" name="ratio" value="1" onchange="calculateAll()"> 1割
+            <input type="radio" name="ratio" value="2" onchange="calculateAll()"> 2割
+            <input type="radio" name="ratio" value="3" checked onchange="calculateAll()"> 3割
         </div>
+
+        <div id="fix_div"><input type="radio" id="fix_exist" name="fix_val" checked onchange="calculateAll()"> 固定あり</div>
+        <div id="igrt_div"><input type="radio" id="igrt_shuyo" name="igrt_val" onchange="calculateAll()"> IGRT腫瘍</div>
+        <div id="count_container">
+            回数: <input type="number" id="count_input" value="1" onchange="calculateAll()">
+        </div>
+        
+        <label><input type="checkbox" id="is_expanded" onchange="toggleExpand()"> 追加分を計算する</label>
     </div>
 
     <div class="card">
         <h3>計算結果</h3>
-        <div class="result-panel">
-            <div class="result-val" id="total_pay">¥ 0</div>
-        </div>
-        <pre id="detail_output">ここに詳細が表示されます</pre>
+        <div class="result-val" id="total_pay">¥ 0</div>
+        <pre id="detail_output">計算結果がここに表示されます</pre>
     </div>
 </div>
 
 <script>
+
 var one_series_methods = ["前立腺VMAT", "全乳房(一連)", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
 
 var outpatient_add_series = ["前立腺VMAT", "全乳房(一連)"];
@@ -845,6 +777,7 @@ function calculateAll() {
     }
 
 }
+
 </script>
 
 </body>
