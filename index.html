@@ -19,8 +19,8 @@
         .result-box { border: 2px solid var(--accent); border-radius: 16px; padding: 20px; text-align: center; margin-top: 20px; }
         .total-price { font-size: 2.2rem; font-weight: bold; margin: 10px 0; }
         .btn-blue { background: var(--accent); width: 100%; padding: 15px; border-radius: 12px; border: none; color: white; font-weight: bold; font-size: 1.1rem; margin-top: 20px; cursor: pointer; }
-        pre { font-size: 0.8rem; color: #ccc; text-align: left; background: #000; padding: 15px; border-radius: 8px; white-space: pre-wrap; margin-top: 15px; }
-        .expand-link { color: var(--accent); cursor: pointer; display: block; margin-top: 20px; font-weight: bold; font-size: 0.95rem; text-align: center; }
+        pre { font-size: 0.8rem; color: #ccc; text-align: left; background: #000; padding: 15px; border-radius: 8px; white-space: pre-wrap; }
+        .expand-btn { display: block; width: 100%; text-align: center; padding: 12px; margin-top: 15px; background: #374151; color: var(--text-sub); border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; border: 1px solid #4b5563; }
         .hidden { display: none; }
     </style>
 </head>
@@ -32,12 +32,32 @@
         <label>照射方法</label>
         <select id="main_method" onchange="calculateAll()"></select>
         
+        <label>患者負担割合</label>
+        <div class="radio-group" onchange="calculateAll()">
+            <input type="radio" name="ratio" id="r1" value="1"><label for="r1">1割</label>
+            <input type="radio" name="ratio" id="r2" value="2"><label for="r2">2割</label>
+            <input type="radio" name="ratio" id="r3" value="3" checked><label for="r3">3割</label>
+        </div>
+
+        <label>患者区分</label>
+        <div class="radio-group" onchange="calculateAll()">
+            <input type="radio" name="pt_type" id="pt_out" value="外来" checked><label for="pt_out">外来</label>
+            <input type="radio" name="pt_type" id="pt_in" value="入院"><label for="pt_in">入院</label>
+        </div>
+
+        <div id="fix_div"><label>固定器具</label><div class="radio-group"><input type="radio" name="fix_val" id="fix_none" value="なし" checked><label for="fix_none">なし</label><input type="radio" name="fix_val" id="fix_exist" value="作成あり"><label for="fix_exist">作成あり</label></div></div>
+        
+        <div id="igrt_div"><label>IGRT区分</label><div class="radio-group"><input type="radio" name="igrt_val" id="igrt_none" value="なし" checked><label for="igrt_none">なし</label><input type="radio" name="igrt_val" id="igrt_shuyo" value="ハ.腫瘍"><label for="igrt_shuyo">ハ.腫瘍</label></div></div>
+        
+        <div id="count_container"><label id="count_label">合計照射回数:</label><input type="number" id="count_input" value="1" oninput="calculateAll()"></div>
+        
         <div class="result-box">
             <div class="total-price" id="total_pay">¥ 0</div>
-            <pre id="detail_output">計算ボタンを押すと結果が表示されます</pre>
+            <pre id="detail_output"></pre>
             <button class="btn-blue" onclick="calculateAll()">会計計算を実行</button>
-            <span class="expand-link" id="expand_toggle" onclick="toggleExpand()">追加・変更分のシミュレーションを開く ≫</span>
         </div>
+
+        <div class="expand-btn" onclick="toggleExpand()">▼ 追加分を計算する ▼</div>
     </div>
 
     <div id="expanded_content" class="card hidden">
@@ -54,23 +74,10 @@
 </div>
 
 <script>
-    // 必須変数
-    var lastMainMethod = "";
-    var lastExMethod = "";
-    var extra_methods_1st = ["前立腺VMAT", "全乳房(一連)", "IMRT", "1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
-    var extra_methods_2nd = ["1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド"];
-    // ※お手元の配列定義(one_series_methods等)もここに続けてください
-
+    // 以前の保持していたロジックをここに挿入してください
     function toggleExpand() {
         const content = document.getElementById("expanded_content");
-        const toggle = document.getElementById("expand_toggle");
         content.classList.toggle("hidden");
-        
-        if (content.classList.contains("hidden")) {
-            toggle.innerText = "追加分を計算する ≫";
-        } else {
-            toggle.innerText = "≪ 追加分を閉じる";
-        }
     }
 
     function onCheckExtra2Changed() { updateExtraOptions(); calculateAll(); }
@@ -81,7 +88,7 @@
         var list = check2 ? extra_methods_2nd : extra_methods_1st;
         exMethodSel.innerHTML = list.map(m => `<option value="${m}">${m}</option>`).join("");
     }
-
+   
     function calculateAll() {
     
         var method = document.getElementById("main_method").value;
