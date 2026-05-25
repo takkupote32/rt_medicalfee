@@ -3,99 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>放射線治療シミュレーター 2026</title>
+    <title>放射線治療 シミュレーター 2026</title>
     <style>
         :root {
-            --primary: #007AFF;
-            --accent: #FF3B30;
-            --bg: #F2F2F7;
-            --card: #FFFFFF;
-            --text: #1C1C1E;
-            --text-secondary: #8E8E93;
-            --border: #C6C6C8;
+            --primary: #2563eb;
+            --accent: #e11d48;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --border: #e2e8f0;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
+            line-height: 1.6;
             margin: 0;
-            padding: 16px;
-            line-height: 1.5;
+            padding: 20px;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
+        .container { max-width: 900px; margin: 0 auto; }
 
-        h2 { font-size: 20px; margin-bottom: 20px; }
         .card {
             background: var(--card);
-            padding: 20px;
+            padding: 24px;
             border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
         }
 
-        label { font-weight: 600; font-size: 14px; display: block; margin-bottom: 8px; }
-        
+        h2 { font-size: 1.5rem; margin-top: 0; color: var(--primary); }
+        h3 { font-size: 1.1rem; border-left: 4px solid var(--primary); padding-left: 12px; margin: 20px 0; }
+
         select, input[type="number"] {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             font-size: 16px;
             margin-bottom: 16px;
-            appearance: none; /* iOSのスタイルをリセット */
+            background: #fff;
         }
 
         .radio-group {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
             gap: 10px;
-            margin-bottom: 16px;
-            background: #F2F2F7;
-            padding: 4px;
-            border-radius: 12px;
+            margin-bottom: 20px;
         }
 
         .radio-inline {
-            flex: 1;
-            text-align: center;
-            padding: 8px;
-            cursor: pointer;
+            background: var(--bg);
+            padding: 10px;
             border-radius: 8px;
-            transition: 0.2s;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
         }
 
         .radio-inline:has(input:checked) {
-            background: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
-        .result-val {
-            font-size: 32px;
-            font-weight: 800;
-            color: var(--accent);
-            margin: 10px 0;
+        .result-panel {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
         }
+
+        .result-val { font-size: 2.5rem; font-weight: 800; color: var(--accent); }
 
         pre {
-            background: #2C2C2E;
-            color: #FFFFFF;
+            background: #1e293b;
+            color: #f8fafc;
             padding: 16px;
-            border-radius: 12px;
-            font-size: 13px;
+            border-radius: 8px;
             overflow-x: auto;
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>⚛️ 診療報酬シミュレーター 2026</h2>
-    
     <div class="card">
+        <h2>⚛️ 放射線治療シミュレーター 2026</h2>
+        
         <h3>基本設定</h3>
         <label>照射方法</label>
         <select id="main_method" onchange="calculateAll()"></select>
@@ -110,15 +108,744 @@
 
     <div class="card">
         <h3>計算結果</h3>
-        <label>概算窓口負担額</label>
-        <div class="result-val" id="total_pay">¥ 0</div>
-        <pre id="detail_output">詳細を表示...</pre>
+        <div class="result-panel">
+            <div class="result-val" id="total_pay">¥ 0</div>
+        </div>
+        <pre id="detail_output">ここに詳細が表示されます</pre>
     </div>
 </div>
 
 <script>
-    // ここに既存の calculateAll() ロジックを統合します
-    function calculateAll() { /* 既存のロジックをここに */ }
+var one_series_methods = ["前立腺VMAT", "全乳房(一連)", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+
+var outpatient_add_series = ["前立腺VMAT", "全乳房(一連)"];
+
+
+
+var no_igrt_list = ["1門照射", "対向2門", "非対向2門・3門照射", "ケロイド", "全乳房(一連)", "前立腺VMAT", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+
+var grid_fix_list = ["前立腺VMAT", "IMRT", "1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド"];
+
+var breath_list = ["IMRT", "肺定位SBRT", "全乳房(一連)", 
+
+"非対向2門・3門照射", "4門以上・運動・原体照射"];
+
+
+
+var extra_methods_1st = ["前立腺VMAT", "全乳房(一連)", "IMRT", "1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+
+var extra_methods_2nd = ["1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド"];
+
+
+
+var lastMainMethod = "";
+
+var lastExMethod = "";
+
+
+
+window.onload = function() {
+
+    updateExtraOptions();
+
+    document.getElementById("main_method").value = "前立腺VMAT";
+
+    document.getElementById("fix_exist").checked = true;
+
+    calculateAll();
+
+};
+
+
+
+function toggleExpand() {
+
+    var isChecked = document.getElementById("is_expanded").checked;
+
+    document.getElementById("expanded_content").style.display = isChecked ? "block" : "none";
+
+    calculateAll();
+
+}
+
+
+
+function onCheckExtra2Changed() {
+
+    updateExtraOptions();
+
+    calculateAll();
+
+}
+
+
+
+function updateExtraOptions() {
+
+    var check2 = document.getElementById("check_extra_2").checked;
+
+    var exMethodSel = document.getElementById("ex_method");
+
+    if (!exMethodSel) return;
+
+    
+
+    var currentVal = exMethodSel.value;
+
+    exMethodSel.innerHTML = "";
+
+    
+
+    var list = check2 ?
+
+    extra_methods_2nd : extra_methods_1st;
+
+    for(var i=0; i<list.length; i++) {
+
+        var opt = document.createElement("option");
+
+        opt.value = list[i];
+
+        opt.innerText = list[i];
+
+        exMethodSel.appendChild(opt);
+
+    }
+
+    
+
+    if(list.indexOf(currentVal) !== -1) {
+
+        exMethodSel.value = currentVal;
+
+    } else {
+
+        exMethodSel.value = check2 ? "1門照射" : "IMRT";
+
+    }
+
+}
+
+
+
+function calculateAll() {
+
+    var method = document.getElementById("main_method").value;
+
+    var ratioRadio = document.querySelector('input[name="ratio"]:checked');
+
+    var ratio = ratioRadio ?
+
+    parseInt(ratioRadio.value) : 3;
+
+    
+
+    var ptTypeRadio = document.querySelector('input[name="pt_type"]:checked');
+
+    var pt_type = ptTypeRadio ? ptTypeRadio.value : "外来";
+
+    if (method !== lastMainMethod) {
+
+        if (method === "前立腺VMAT") {
+
+            document.getElementById("fix_exist").checked = true;
+
+        } else {
+
+            document.getElementById("fix_none").checked = true;
+
+        }
+
+        if (method === "IMRT") {
+
+            document.getElementById("igrt_shuyo").checked = true;
+
+        } else {
+
+            document.getElementById("igrt_none").checked = true;
+
+        }
+
+        document.getElementById("breath_none").checked = true;
+
+        document.getElementById("breast_igrt_none").checked = true;
+
+        lastMainMethod = method;
+
+    }
+
+
+
+    var isNoIgrt = (no_igrt_list.indexOf(method) !== -1);
+
+    if (isNoIgrt) {
+
+        document.getElementById("igrt_none").checked = true;
+
+        document.getElementById("igrt_div").style.display = "none";
+
+    } else {
+
+        document.getElementById("igrt_div").style.display = "block";
+
+    }
+
+
+
+    document.getElementById("fix_div").style.display = (grid_fix_list.indexOf(method) !== -1) ? "block" : "none";
+
+    document.getElementById("breath_div").style.display = (breath_list.indexOf(method) !== -1) ?
+
+    "block" : "none";
+
+    document.getElementById("breast_igrt_div").style.display = (method === "全乳房(一連)") ? "block" : "none";
+
+
+
+    var is_one_series = one_series_methods.indexOf(method) !== -1;
+
+    var info_msg = document.getElementById("info_msg");
+
+    var count_label = document.getElementById("count_label");
+
+    var count_container = document.getElementById("count_container");
+
+    if (is_one_series) {
+
+        info_msg.style.display = "block";
+
+        info_msg.innerHTML = "💡 " + method + " は一連算定項目です";
+
+        
+
+        if (pt_type === "外来" && outpatient_add_series.indexOf(method) !== -1) {
+
+            count_label.innerText = "外来治療回数 (加算用):";
+
+            count_container.style.display = "block";
+
+        } else {
+
+            count_container.style.display = "none";
+
+        }
+
+    } else {
+
+        info_msg.style.display = "none";
+
+        count_label.innerText = "合計照射回数:";
+
+        count_container.style.display = "block";
+
+    }
+
+
+
+    var count = parseInt(document.getElementById("count_input").value) || 1;
+
+    var base_pts = 0;
+
+    var formula_list = [];
+
+
+
+    var exclude_m000 = ["肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+
+    if (exclude_m000.indexOf(method) !== -1) {
+
+        formula_list.push("・管理料(M000): 0点 (一連に含む)");
+
+    } else {
+
+        var m000_pts = 4000;
+
+        if (method === "1門照射" || method === "ケロイド" || method === "対向2門") m000_pts = 2700;
+
+        else if (method === "非対向2門・3門照射") m000_pts = 3100;
+
+        else if (method === "IMRT" || method === "前立腺VMAT") m000_pts = 5000;
+
+        else if (method === "全乳房(一連)") m000_pts = 4000;
+
+
+
+        base_pts += m000_pts;
+
+        formula_list.push("・管理料(M000): " + m000_pts.toLocaleString() + "点");
+
+        base_pts += 330;
+
+        formula_list.push("・放射線治療専任加算: 330点");
+
+    }
+
+
+
+    base_pts += 1100;
+
+    formula_list.push("・安全管理料2: 1,100点");
+
+
+
+    var fix_checked = document.querySelector('input[name="fix_val"]:checked');
+
+    var fix_var = fix_checked ?
+
+    fix_checked.value : "なし";
+
+    if (grid_fix_list.indexOf(method) !== -1 && fix_var === "作成あり") {
+
+        base_pts += 1000;
+
+        formula_list.push("・体外照射用固定器具加算: 1,000点");
+
+    }
+
+
+
+    var breath_checked = document.querySelector('input[name="breath_val"]:checked');
+
+    var breath_var = breath_checked ? breath_checked.value : "なし";
+
+    if (is_one_series) {
+
+        if (method === "肺定位SBRT") {
+
+            base_pts += 63000;
+
+            formula_list.push("・定位照射(一連): 63,000点");
+
+            if (breath_var === "あり") { base_pts += 5000; formula_list.push("・呼吸性移動対策加算: 5,000点");
+
+            }
+
+        } else if (method === "脳定位SRT") {
+
+            base_pts += 63000;
+
+            formula_list.push("・定位照射(一連): 63,000点");
+
+        } else if (method === "前立腺VMAT") {
+
+            base_pts += (96500 + 9000);
+
+            formula_list.push("・照射料(一連): 96,500点\n・IGRT(ハ.腫瘍 一連): 9,000点");
+
+        } else if (method === "全乳房(一連)") {
+
+            base_pts += 41500;
+
+            formula_list.push("・照射料(一連): 41,500点");
+
+            var b_igrt_checked = document.querySelector('input[name="breast_igrt_val"]:checked');
+
+            if (b_igrt_checked && b_igrt_checked.value === "あり") { base_pts += 2400; formula_list.push("・IGRT(一連): 2,400点");
+
+            }
+
+            if (breath_var === "あり") { base_pts += 2400;
+
+            formula_list.push("・呼吸性移動対策加算(一連): 2,400点"); }
+
+        } else if (method === "全身照射TBI") {
+
+            base_pts += 30000;
+
+            formula_list.push("・全身照射(一連): 30,000点");
+
+        } else if (method === "緩和寡分割") {
+
+            base_pts += 8000;
+
+            formula_list.push("・緩和寡分割(一連): 8,000点");
+
+        }
+
+
+
+        if (pt_type === "外来" && outpatient_add_series.indexOf(method) !== -1) {
+
+            var out_pts = count * 100;
+
+            base_pts += out_pts;
+
+            formula_list.push("・外来放射線治療加算(100点) × " + count + "回: " + out_pts.toLocaleString() + "点");
+
+        } else if (pt_type === "外来" && ["肺定位SBRT", "脳定位SRT", "緩和寡分割"].indexOf(method) !== -1) {
+
+            formula_list.push("・外来放射線治療加算: 0点 (対象外項目)");
+
+        }
+
+    } else {
+
+        var base_charge = 0;
+
+        if (method === "IMRT") base_charge = 3000;
+
+        else if (method === "4門以上・運動・原体照射") base_charge = 1750;
+
+        else if (method === "対向2門" || method === "非対向2門・3門照射") base_charge = 1750;
+
+        else if (method === "1門照射" || method === "ケロイド") base_charge = 840;
+
+
+
+        var igrt_pts = 0;
+
+        if (!isNoIgrt) {
+
+            var igrt_checked = document.querySelector('input[name="igrt_val"]:checked');
+
+            var igrt_sel_val = igrt_checked ? igrt_checked.value : "なし";
+
+            var igrt_map = {"なし": 0, "イ.体表": 150, "ロ.骨構造": 300, "ハ.腫瘍": 450};
+
+            igrt_pts = igrt_map[igrt_sel_val] || 0;
+
+        }
+
+
+
+        var breath_per_shot = 0;
+
+        if (breath_list.indexOf(method) !== -1 && breath_var === "あり") breath_per_shot = 150;
+
+
+
+        base_pts += (base_charge + igrt_pts + breath_per_shot) * count;
+
+        formula_list.push("--- 照射ごとの計算 ---");
+
+        formula_list.push("・照射料(" + base_charge + "点) × " + count + "回: " + (base_charge*count).toLocaleString() + "点");
+
+        if (igrt_pts > 0) formula_list.push("・IGRT(" + igrt_pts + "点) × " + count + "回: " + (igrt_pts*count).toLocaleString() + "点");
+
+        if (breath_per_shot > 0) formula_list.push("・呼吸性移動対策(" + breath_per_shot + "点) × " + count + "回: " + (breath_per_shot*count).toLocaleString() + "点");
+
+        if (pt_type === "外来") {
+
+            // ケロイドの場合は加算しない
+
+            if (method !== "ケロイド") {
+
+                var out_pts = count * 100;
+
+                base_pts += out_pts;
+
+                formula_list.push("・外来放射線治療加算(100点) × " + count + "回: " + out_pts.toLocaleString() + "点");
+
+            } else {
+
+                formula_list.push("・外来放射線治療加算: 0点 (ケロイドは対象外)");
+
+            }
+
+        }
+
+    }
+
+
+
+    var final_pay = base_pts * 10 * (ratio / 10);
+
+    document.getElementById("total_pay").innerText = "¥ " + Math.round(final_pay).toLocaleString();
+
+    document.getElementById("detail_output").innerText = formula_list.join("\n") + "\n----------------------------\n合計点数: " + base_pts.toLocaleString() + " 点\n計算式: " + base_pts.toLocaleString() + "点 × 10円 × " + (ratio/10) + " = ¥" + Math.round(final_pay).toLocaleString();
+
+    var isExpanded = document.getElementById("is_expanded").checked;
+
+    if (isExpanded) {
+
+        var check_extra_2 = document.getElementById("check_extra_2").checked;
+
+        var ex_method = document.getElementById("ex_method").value;
+
+        if(!ex_method) return;
+
+        
+
+        if (ex_method !== lastExMethod) {
+
+            document.getElementById("ex_igrt_none").checked = true;
+
+            document.getElementById("ex_breath_none").checked = true;
+
+            lastExMethod = ex_method;
+
+        }
+
+
+
+        var is_ex_one_series = one_series_methods.indexOf(ex_method) !== -1;
+
+        var ex_count = 1;
+
+        
+
+        if (!check_extra_2 && is_ex_one_series && outpatient_add_series.indexOf(ex_method) === -1) {
+
+            document.getElementById("ex_count_container").style.display = "none";
+
+        } else {
+
+            document.getElementById("ex_count_container").style.display = "block";
+
+            ex_count = parseInt(document.getElementById("ex_count_input").value) || 1;
+
+        }
+
+        
+
+        var isExNoIgrt = (no_igrt_list.indexOf(ex_method) !== -1);
+
+        if (!check_extra_2 && !isExNoIgrt) {
+
+            document.getElementById("ex_igrt_div").style.display = "block";
+
+        } else {
+
+            document.getElementById("ex_igrt_none").checked = true;
+
+            document.getElementById("ex_igrt_div").style.display = "none";
+
+        }
+
+        
+
+        var ex_breath_allowed = false;
+
+        if (check_extra_2 && (ex_method === "非対向2門・3門照射" || ex_method === "4門以上・運動・原体照射")) ex_breath_allowed = true;
+
+        if (!check_extra_2 && ["IMRT", "非対向2門・3門照射", "4門以上・運動・原体照射"].indexOf(ex_method) !== -1) ex_breath_allowed = true;
+
+        document.getElementById("ex_breath_div").style.display = ex_breath_allowed ? "block" : "none";
+
+        var extra_pts = 0;
+
+        var extra_formula = [];
+
+        
+
+        if (check_extra_2) {
+
+            document.getElementById("ex_result_title").innerText = "▼ 2回目追加分のみの計算結果";
+
+            document.getElementById("ex_count_label").innerText = "2回目 照射回数:";
+
+            
+
+            var pts_2nd_map = {"1門照射": 336, "対向2門": 700, "非対向2門・3門照射": 700, "4門以上・運動・原体照射": 700, "ケロイド": 336};
+
+            var ex_base_pts = pts_2nd_map[ex_method] || 0;
+
+            
+
+            var ex_m000 = 4000;
+
+            if (ex_method === "1門照射" || ex_method === "ケロイド" || ex_method === "対向2門") ex_m000 = 2700;
+
+            else if (ex_method === "非対向2門・3門照射") ex_m000 = 3100;
+
+            
+
+            extra_pts += (ex_m000 + 330);
+
+            extra_formula.push("・追加管理料(M000): " + ex_m000.toLocaleString() + "点\n・追加放射線治療専任加算: 330点");
+
+            var ex_breath_checked = document.querySelector('input[name="ex_breath_val"]:checked');
+
+            var ex_breath_pts = (ex_breath_checked && ex_breath_checked.value === "あり") ? 150 : 0;
+
+            extra_pts += (ex_base_pts + ex_breath_pts) * ex_count;
+
+            extra_formula.push("--- 照射ごとの計算 ---");
+
+            extra_formula.push("・2回目照射料(" + ex_method + "): " + ex_base_pts + "点 × " + ex_count + "回 = " + (ex_base_pts*ex_count).toLocaleString() + "点");
+
+            if (ex_breath_pts > 0) {
+
+                extra_formula.push("・2回目呼吸性移動対策(150点) × " + ex_count + "回 = " + (ex_breath_pts*ex_count).toLocaleString() + "点");
+
+            }
+
+        } else {
+
+            document.getElementById("ex_result_title").innerText = "▼ 1回目追加分のみの計算結果";
+
+            document.getElementById("ex_count_label").innerText = "1回目 照射回数:";
+
+            
+
+            var pts_1st_map = {
+
+                "前立腺VMAT": 96500 + 9000, "全乳房(一連)": 41500, "IMRT": 3000, "1門照射": 840, "ケロイド": 840,
+
+                "対向2門": 1750, "非対向2門・3門照射": 1750, "4門以上・運動・原体照射": 1750, "肺定位SBRT": 63000,
+
+                "脳定位SRT": 63000, "全身照射TBI": 30000, "緩和寡分割": 8000
+
+            };
+
+            var ex_base_pts = pts_1st_map[ex_method] || 0;
+
+
+
+            if (exclude_m000.indexOf(ex_method) !== -1) {
+
+                extra_formula.push("・追加管理料(M000): 0点 (一連に含むため算定不可)");
+
+            } else {
+
+                var ex_m000 = 4000;
+
+                if (ex_method === "1門照射" || ex_method === "ケロイド" || ex_method === "対向2門") ex_m000 = 2700;
+
+                else if (ex_method === "非対向2門・3門照射") ex_m000 = 3100;
+
+                else if (ex_method === "IMRT" || ex_method === "前立腺VMAT") ex_m000 = 5000;
+
+                extra_pts += (ex_m000 + 330);
+
+                extra_formula.push("・追加管理料(M000): " + ex_m000.toLocaleString() + "点\n・追加放射線治療専任加算: 330点");
+
+            }
+
+
+
+            if (is_ex_one_series) {
+
+                extra_pts += ex_base_pts;
+
+                if (ex_method === "前立腺VMAT") {
+
+                    extra_formula.push("・追加照射(前立腺VMAT 一連): 96,500点\n・追加IGRT(ハ.腫瘍 一連): 9,000点");
+
+                } else {
+
+                    extra_formula.push("・追加照射(" + ex_method + "): " + ex_base_pts.toLocaleString() + "点");
+
+                }
+
+
+
+                if (pt_type === "外来" && outpatient_add_series.indexOf(ex_method) !== -1) {
+
+                    var ex_out_series_pts = ex_count * 100;
+
+                    extra_pts += ex_out_series_pts;
+
+                    extra_formula.push("・追加外来放射線治療加算(100点) × " + ex_count + "回: " + ex_out_series_pts.toLocaleString() + "点");
+
+                } else if (pt_type === "外来" && ["肺定位SBRT", "脳定位SRT", "緩和寡分割"].indexOf(ex_method) !== -1) {
+
+                    extra_formula.push("・追加外来放射線治療加算: 0点 (対象外項目)");
+
+                }
+
+            } else {
+
+                var ex_igrt_pts = 0;
+
+                var ex_igrt_sel = "なし";
+
+                if (!isExNoIgrt) {
+
+                    var ex_igrt_checked = document.querySelector('input[name="ex_igrt_val"]:checked');
+
+                    ex_igrt_sel = ex_igrt_checked ? ex_igrt_checked.value : "なし";
+
+                    var igrt_map = {"なし": 0, "イ.体表": 150, "ロ.骨構造": 300, "ハ.腫瘍": 450};
+
+                    ex_igrt_pts = igrt_map[ex_igrt_sel] || 0;
+
+                }
+
+
+
+                var ex_breath_checked = document.querySelector('input[name="ex_breath_val"]:checked');
+
+                var ex_breath_pts = (ex_breath_checked && ex_breath_checked.value === "あり") ? 150 : 0;
+
+                extra_pts += (ex_base_pts + ex_igrt_pts + ex_breath_pts) * ex_count;
+
+                extra_formula.push("--- 照射ごとの計算 ---");
+
+                extra_formula.push("・追加照射(" + ex_method + "): " + ex_base_pts + "点 × " + ex_count + "回 = " + (ex_base_pts*ex_count).toLocaleString() + "点");
+
+                if (ex_igrt_pts > 0) {
+
+                    extra_formula.push("・追加IGRT(" + ex_igrt_sel + " " + ex_igrt_pts + "点) × " + ex_count + "回 = " + (ex_igrt_pts*ex_count).toLocaleString() + "点");
+
+                }
+
+                if (ex_breath_pts > 0) {
+
+                    extra_formula.push("・追加呼吸性移動対策(150点) × " + ex_count + "回 = " + (ex_breath_pts*ex_count).toLocaleString() + "点");
+
+                }
+
+            }
+
+        }
+
+
+
+        if (pt_type === "外来" && !is_ex_one_series && !check_extra_2) {
+
+            // ケロイドの場合は加算しない
+
+            if (ex_method !== "ケロイド") {
+
+                var ex_out_normal_pts = ex_count * 100;
+
+                extra_pts += ex_out_normal_pts;
+
+                extra_formula.push("・追加外来放射線治療加算(100点) × " + ex_count + "回: " + ex_out_normal_pts.toLocaleString() + "点");
+
+            } else {
+
+                extra_formula.push("・追加外来放射線治療加算: 0点 (ケロイドは対象外)");
+
+            }
+
+        }
+
+        
+
+        var extra_pay = extra_pts * 10 * (ratio / 10);
+
+        document.getElementById("ex_pay_val").innerText = "¥ " + Math.round(extra_pay).toLocaleString();
+
+        document.getElementById("ex_detail_output").innerText = extra_formula.join("\n") + "\n----------------------------\n追加点数: " + extra_pts.toLocaleString() + " 点\n計算式: " + extra_pts.toLocaleString() + "点 × 10円 × " + (ratio/10) + " = ¥" + Math.round(extra_pay).toLocaleString();
+
+        document.getElementById("grand_result_box").style.display = "block";
+
+        var grand_total_pts = base_pts + extra_pts;
+
+        var grand_final_pay = grand_total_pts * 10 * (ratio / 10);
+
+        if (check_extra_2) {
+
+            document.getElementById("grand_title").innerText = "🟩【1回目会計 ＋ 2回目会計】総合計 (窓口負担額)";
+
+            document.getElementById("grand_info_text").innerHTML = "総点数: " + grand_total_pts.toLocaleString() + " 点 <br> (治療ベース: " + base_pts.toLocaleString() + "点 + 2回目追加: " + extra_pts.toLocaleString() + "点)";
+
+        } else {
+
+            document.getElementById("grand_title").innerText = "🟩 追加分合算後の総合計 (窓口負担額)";
+
+            document.getElementById("grand_info_text").innerHTML = "総点数: " + grand_total_pts.toLocaleString() + " 点 <br> (治療ベース: " + base_pts.toLocaleString() + "点 + 1回目追加: " + extra_pts.toLocaleString() + "点)";
+
+        }
+
+        document.getElementById("grand_pay_val").innerText = "¥ " + Math.round(grand_final_pay).toLocaleString();
+
+    }
+
+}
 </script>
+
 </body>
 </html>
