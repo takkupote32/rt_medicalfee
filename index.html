@@ -65,9 +65,12 @@
         const content = document.getElementById("expanded_content");
         const toggle = document.getElementById("expand_toggle");
         content.classList.toggle("hidden");
-        toggle.innerText = content.classList.contains("hidden") 
-            ? "追加・変更分のシミュレーションを開く ≫" 
-            : "≪ 追加・変更分のシミュレーションを閉じる";
+        
+        if (content.classList.contains("hidden")) {
+            toggle.innerText = "追加分を計算する ≫";
+        } else {
+            toggle.innerText = "≪ 追加分を閉じる";
+        }
     }
 
     function onCheckExtra2Changed() { updateExtraOptions(); calculateAll(); }
