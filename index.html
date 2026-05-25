@@ -584,7 +584,7 @@
 
                         <div class="fields-grid">
                             <div class="field span-2">
-                                <label class="field-label">追加する照射方法（1回目）</label>
+                                <label class="field-label">照射方法</label>
                                 <select id="ex_method" onchange="calculateAll()"></select>
                             </div>
 
@@ -1030,7 +1030,7 @@ function calculateAll() {
         var grand_final_pay = grand_total_pts * 10 * (ratio / 10);
 
         if (check_extra_2) {
-            document.getElementById("grand_title").innerText = "【左側会計 ＋ 2回目会計】総合計（窓口負担額）";
+            document.getElementById("grand_title").innerText = "【1回目会計 ＋ 2回目会計】総合計（窓口負担額）";
             document.getElementById("grand_info_text").innerHTML =
                 "総点数: " + grand_total_pts.toLocaleString() + " 点<br>(治療ベース: " + base_pts.toLocaleString() + "点 + 2回目追加: " + extra_pts.toLocaleString() + "点)";
         } else {
