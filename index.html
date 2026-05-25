@@ -2,90 +2,29 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>放射線治療 診療報酬シミュレーター 2026</title>
     <style>
-        /* iOS Safari互換性を維持しつつ現代的なデザインへ */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Roboto, sans-serif;
-            background-color: #F4F7F9;
-            color: #2D3436;
-            margin: 0;
-            padding: 16px;
-            line-height: 1.5;
+        :root {
+            --primary: #007AFF;
+            --bg: #F2F2F7;
+            --card-bg: #FFFFFF;
+            --text: #1C1C1E;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h2 { color: #2D3436; margin-bottom: 20px; font-size: 22px; }
-        h3 { color: #0984e3; font-size: 18px; margin-top: 0; padding-bottom: 10px; border-bottom: 2px solid #e1e8ed; }
-        h4 { margin: 10px 0; font-size: 16px; }
-        
-        .box {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-        
-        label { display: block; font-weight: 600; margin: 15px 0 8px 0; font-size: 14px; }
-        
-        select, input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #dfe6e9;
-            border-radius: 8px;
-            font-size: 16px; /* iOSのズーム防止のため16px推奨 */
-            background-color: #fcfcfc;
-            box-sizing: border-box;
-        }
-        
-        .radio-group { 
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .radio-inline { 
-            background: #f1f2f6;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-weight: normal; 
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-        .radio-inline input { margin-right: 8px; }
-        
-        .result-val { font-size: 36px; font-weight: 800; color: #d63031; margin: 10px 0; }
-        .grand-result { background: #00b894; color: white; padding: 20px; border-radius: 12px; margin-top: 20px; }
-        .grand-result .result-val { color: white; }
-        
-        pre {
-            background: #2d3436;
-            color: #fab1a0;
-            padding: 15px;
-            border-radius: 8px;
-            overflow-x: auto;
-            font-size: 13px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-        }
-        
-        .info { background: #e3f2fd; color: #0277bd; padding: 12px; border-radius: 8px; font-size: 13px; margin: 10px 0; }
-        .warning { background: #fff3e0; color: #e65100; padding: 12px; border-radius: 8px; font-size: 13px; margin-top: 15px; }
-        
-        .checkbox-label { 
-            background: #0984e3; color: white; padding: 15px; border-radius: 8px; 
-            text-align: center; font-size: 16px; cursor: pointer; display: block;
-        }
-        
-        @media (min-width: 600px) {
-            .grid { display: flex; gap: 20px; }
-            .col { flex: 1; }
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 16px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; }
+        .box { background: var(--card-bg); padding: 20px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+        select, input[type="number"] { width: 100%; padding: 12px; border: 1px solid #C6C6C8; border-radius: 10px; font-size: 16px; margin-bottom: 15px; box-sizing: border-box; background: #F9F9F9; -webkit-appearance: none; }
+        .radio-group { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; }
+        .radio-inline { flex: 1; text-align: center; background: #E5E5EA; padding: 10px; border-radius: 8px; font-size: 14px; cursor: pointer; }
+        .radio-inline:has(input:checked) { background: var(--primary); color: white; }
+        .radio-inline input { display: none; }
+        .result-val { font-size: 32px; font-weight: 800; color: var(--primary); margin: 10px 0; }
+        pre { background: #1C1C1E; color: #FFF; padding: 15px; border-radius: 12px; font-size: 12px; overflow-x: auto; line-height: 1.5; }
+        .checkbox-label { color: var(--primary); font-weight: 600; text-align: center; display: block; padding: 10px; cursor: pointer; }
+        .warning { font-size: 12px; color: #8E8E93; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -94,7 +33,6 @@
     <h2>⚛️ 放射線治療 診療報酬シミュレーター 2026</h2>
     
     <div class="box">
-        <h3>📋 基本設定</h3>
         <label>主たる照射方法</label>
         <select id="main_method" onchange="calculateAll()">
             <option value="前立腺VMAT">前立腺VMAT</option>
@@ -120,114 +58,32 @@
 
         <label>患者区分</label>
         <div class="radio-group" onchange="calculateAll()">
-            <label class="radio-inline"><input type="radio" name="pt_type" id="pt_out" value="外来" checked> 外来</label>
-            <label class="radio-inline"><input type="radio" name="pt_type" id="pt_in" value="入院"> 入院</label>
-        </div>
-
-        <div id="igrt_div">
-            <label>IGRT区分</label>
-            <div class="radio-group" onchange="calculateAll()">
-                <label class="radio-inline"><input type="radio" name="igrt_val" id="igrt_none" value="なし" checked> なし</label>
-                <label class="radio-inline"><input type="radio" name="igrt_val" id="igrt_tai" value="イ.体表"> イ.体表</label>
-                <label class="radio-inline"><input type="radio" name="igrt_val" id="igrt_kotsu" value="ロ.骨構造"> ロ.骨構造</label>
-                <label class="radio-inline"><input type="radio" name="igrt_val" id="igrt_shuyo" value="ハ.腫瘍"> ハ.腫瘍</label>
-            </div>
-        </div>
-
-        <div id="fix_div">
-            <label>体外照射用固定器具</label>
-            <div class="radio-group" onchange="calculateAll()">
-                <label class="radio-inline"><input type="radio" name="fix_val" id="fix_none" value="なし"> なし</label>
-                <label class="radio-inline"><input type="radio" name="fix_val" id="fix_exist" value="作成あり"> 作成あり</label>
-            </div>
-        </div>
-        
-        <div id="breath_div">
-            <label>呼吸性移動対策</label>
-            <div class="radio-group" onchange="calculateAll()">
-                <label class="radio-inline"><input type="radio" name="breath_val" id="breath_none" value="なし" checked> なし</label>
-                <label class="radio-inline"><input type="radio" name="breath_val" id="breath_exist" value="あり"> あり</label>
-            </div>
-        </div>
-
-        <div id="breast_igrt_div" style="display:none;">
-            <label>IGRT(一連2400点)</label>
-            <div class="radio-group" onchange="calculateAll()">
-                <label class="radio-inline"><input type="radio" name="breast_igrt_val" id="breast_igrt_none" value="なし" checked> なし</label>
-                <label class="radio-inline"><input type="radio" name="breast_igrt_val" id="breast_igrt_exist" value="あり"> あり</label>
-            </div>
+            <label class="radio-inline"><input type="radio" name="pt_type" value="外来" checked> 外来</label>
+            <label class="radio-inline"><input type="radio" name="pt_type" value="入院"> 入院</label>
         </div>
 
         <div id="count_container">
             <label id="count_label">合計照射回数:</label>
             <input type="number" id="count_input" value="1" min="1" oninput="calculateAll()">
         </div>
-        
-        <div id="info_msg" class="info" style="display:none;"></div>
     </div>
 
     <div class="box">
-        <h3>💰 会計計算結果 (ベース治療分)</h3>
         <div class="result-val" id="total_pay">¥ 0</div>
-        <label>📋 計算内訳明細</label>
-        <pre id="detail_output">ここに内訳が表示されます</pre>
-        <div class="warning">
-            ⚠️ 外来の場合、「外来放射線診療料」が別途加算されます。
-        </div>
+        <pre id="detail_output">計算内訳が表示されます</pre>
+        <div class="warning">※外来の場合、別途「外来放射線診療料」が加算されます。</div>
     </div>
 
-    <label class="checkbox-label">
-        <input type="checkbox" id="is_expanded" onchange="toggleExpand()"> 追加・変更分のシミュレーションを開く
-    </label>
-    
-    <div id="expanded_content" style="display:none; margin-top:20px;">
-        <div class="box">
-            <h3>🔄 追加・変更シミュレーション</h3>
-            <label class="radio-inline" style="justify-content: center; background: #ffeaa7;">
-                <input type="checkbox" id="check_extra_2" onchange="onCheckExtra2Changed()"> 2回目の計算として実行する
-            </label>
-            
-            <label>追加・変更する照射方法</label>
-            <select id="ex_method" onchange="calculateAll()"></select>
-
-            <div id="ex_count_container">
-                <label id="ex_count_label">追加 照射回数:</label>
-                <input type="number" id="ex_count_input" value="1" min="1" oninput="calculateAll()">
-            </div>
-            
-            <div id="ex_igrt_div">
-                <label>追加 IGRT区分</label>
-                <div class="radio-group" onchange="calculateAll()">
-                    <label class="radio-inline"><input type="radio" name="ex_igrt_val" id="ex_igrt_none" value="なし" checked> なし</label>
-                    <label class="radio-inline"><input type="radio" name="ex_igrt_val" id="ex_igrt_tai" value="イ.体表"> イ.体表</label>
-                    <label class="radio-inline"><input type="radio" name="ex_igrt_val" id="ex_igrt_kotsu" value="ロ.骨構造"> ロ.骨構造</label>
-                    <label class="radio-inline"><input type="radio" name="ex_igrt_val" id="ex_igrt_shuyo" value="ハ.腫瘍"> ハ.腫瘍</label>
-                </div>
-            </div>
-
-            <div id="ex_breath_div">
-                <label>追加 呼吸性移動対策</label>
-                <div class="radio-group" onchange="calculateAll()">
-                    <label class="radio-inline"><input type="radio" name="ex_breath_val" id="ex_breath_none" value="なし" checked> なし</label>
-                    <label class="radio-inline"><input type="radio" name="ex_breath_val" id="ex_breath_exist" value="あり"> あり</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="box">
-            <h3 id="ex_result_title">▼ 追加分のみの計算結果</h3>
-            <div class="result-val" id="ex_pay_val" style="color: #fd9644;">¥ 0</div>
-            <pre id="ex_detail_output">ここに内訳が表示されます</pre>
-        </div>
-
-        <div class="grand-result" id="grand_result_box">
-            <h4 id="grand_title">🟩 総合計 (窓口負担額)</h4>
-            <div class="result-val" id="grand_pay_val">¥ 0</div>
-            <div id="grand_info_text"></div>
+    <div class="box">
+        <label class="checkbox-label">
+            <input type="checkbox" id="is_expanded" onchange="toggleExpand()"> 追加・変更シミュレーションを開く ≫
+        </label>
+        <div id="expanded_content" style="display:none;">
+            <pre id="ex_detail_output"></pre>
         </div>
     </div>
 </div>
-
+    
 <script>
 /* 既存の計算ロジックを維持 */
 var one_series_methods = ["前立腺VMAT", "全乳房(一連)", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
@@ -239,6 +95,11 @@ var extra_methods_1st = ["前立腺VMAT", "全乳房(一連)", "IMRT", "1門照�
 var extra_methods_2nd = ["1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド"];
 var lastMainMethod = "";
 var lastExMethod = "";
+
+function toggleExpand() {
+        document.getElementById("expanded_content").style.display = document.getElementById("is_expanded").checked ? "block" : "none";
+        calculateAll();
+    }    
 
 window.onload = function() { updateExtraOptions(); document.getElementById("main_method").value = "前立腺VMAT"; document.getElementById("fix_exist").checked = true; calculateAll(); };
 function toggleExpand() { var isChecked = document.getElementById("is_expanded").checked; document.getElementById("expanded_content").style.display = isChecked ? "block" : "none"; calculateAll(); }
