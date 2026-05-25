@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>放射線治療シミュレーター 2026</title>
+    <style>
+        :root {
+            --primary: #007AFF;
+            --accent: #FF3B30;
+            --bg: #F2F2F7;
+            --card: #FFFFFF;
+            --text: #1C1C1E;
+            --text-secondary: #8E8E93;
+            --border: #C6C6C8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h2 { font-size: 20px; margin-bottom: 20px; }
+        .card {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        label { font-weight: 600; font-size: 14px; display: block; margin-bottom: 8px; }
+        
+        select, input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 16px;
+            appearance: none; /* iOSのスタイルをリセット */
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            background: #F2F2F7;
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .radio-inline {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+
+        .radio-inline:has(input:checked) {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .result-val {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 10px 0;
+        }
+
+        pre {
+            background: #2C2C2E;
+            color: #FFFFFF;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⚛️ 診療報酬シミュレーター 2026</h2>
+    
+    <div class="card">
+        <h3>基本設定</h3>
+        <label>照射方法</label>
+        <select id="main_method" onchange="calculateAll()"></select>
+
+        <label>患者負担割合</label>
+        <div class="radio-group" onchange="calculateAll()">
+            <label class="radio-inline"><input type="radio" name="ratio" value="1"> 1割</label>
+            <label class="radio-inline"><input type="radio" name="ratio" value="2"> 2割</label>
+            <label class="radio-inline"><input type="radio" name="ratio" value="3" checked> 3割</label>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>計算結果</h3>
+        <label>概算窓口負担額</label>
+        <div class="result-val" id="total_pay">¥ 0</div>
+        <pre id="detail_output">詳細を表示...</pre>
+    </div>
+</div>
+
+<script>
+    // ここに既存の calculateAll() ロジックを統合します
+    function calculateAll() { /* 既存のロジックをここに */ }
+</script>
+</body>
+</html>
