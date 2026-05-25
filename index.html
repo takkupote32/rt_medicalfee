@@ -74,7 +74,23 @@
 </div>
 
 <script>
-    // 以前の保持していたロジックをここに挿入してください
+    var one_series_methods = ["前立腺VMAT", "全乳房(一連)", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+    var outpatient_add_series = ["前立腺VMAT", "全乳房(一連)"];
+    var no_igrt_list = ["1門照射", "対向2門", "非対向2門・3門照射", "ケロイド", "全乳房(一連)", "前立腺VMAT", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+    var grid_fix_list = ["前立腺VMAT", "IMRT", "1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド"];
+    var breath_list = ["IMRT", "肺定位SBRT", "全乳房(一連)","非対向2門・3門照射", "4門以上・運動・原体照射"];
+    var extra_methods_1st = ["前立腺VMAT", "全乳房(一連)", "IMRT", "1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+    var extra_methods_2nd = ["1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド"];
+    var lastMainMethod = "";
+    var lastExMethod = "";
+    
+    window.onload = function() {
+        updateExtraOptions();
+        document.getElementById("main_method").value = "前立腺VMAT";
+        document.getElementById("fix_exist").checked = true;
+        calculateAll();
+    };
+   
     function toggleExpand() {
         const content = document.getElementById("expanded_content");
         content.classList.toggle("hidden");
