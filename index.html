@@ -8,7 +8,6 @@
         :root { --bg-dark: #1a1d26; --card-bg: #282c37; --text-main: #ffffff; --accent-blue: #1e75ff; --text-secondary: #a0aab8; }
         body { font-family: -apple-system, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; padding: 16px; }
         .container { max-width: 500px; margin: 0 auto; }
-        h1 { font-size: 1.1rem; color: #73a9ff; margin-bottom: 20px; }
         .card { background: var(--card-bg); padding: 20px; border-radius: 16px; margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary); }
         select, input[type="number"] { width: 100%; background: #1e2129; border: 1px solid #444; color: white; padding: 12px; border-radius: 8px; margin-bottom: 16px; box-sizing: border-box; }
@@ -24,8 +23,7 @@
 <body>
 
 <div class="container">
-    <h1>放射線治療 診療報酬シミュレーター 2026</h1>
-
+    <h1>放射線治療 診療報酬シミュレーター</h1>
     <div class="card">
         <label>照射方法</label>
         <select id="main_method" onchange="calculateAll()"></select>
@@ -43,25 +41,31 @@
             <input type="radio" name="pt_type" id="pt_in" value="入院"><label for="pt_in">入院</label>
         </div>
 
-        <div id="fix_div">
-            <label>固定器具</label>
+        <div id="fix_div"><label>固定器具</label>
             <div class="radio-group" onchange="calculateAll()">
                 <input type="radio" name="fix_val" id="fix_none" value="なし" checked><label for="fix_none">なし</label>
                 <input type="radio" name="fix_val" id="fix_exist" value="作成あり"><label for="fix_exist">作成あり</label>
             </div>
         </div>
 
-        <div id="count_container">
-            <label id="count_label">合計照射回数:</label>
-            <input type="number" id="count_input" value="1" oninput="calculateAll()">
-        </div>
-        
-        <div id="info_msg" style="font-size: 0.8rem; color: #ffcc00; margin-bottom: 10px;"></div>
+        <div id="igrt_div"><label>IGRT</label><input type="radio" name="igrt_val" id="igrt_none" value="なし" checked></div>
+        <div id="breath_div"><label>呼吸対策</label><input type="radio" name="breath_val" id="breath_none" value="なし" checked></div>
+        <div id="breast_igrt_div"><input type="radio" name="breast_igrt_val" id="breast_igrt_none" value="なし" checked></div>
+        <div id="count_container"><label id="count_label">合計照射回数:</label><input type="number" id="count_input" value="1" oninput="calculateAll()"></div>
+        <div id="info_msg"></div>
+        <input type="checkbox" id="is_expanded" onchange="toggleExpand()">
+        <div id="expanded_content" style="display:none;"></div>
+        <input type="checkbox" id="check_extra_2" onchange="onCheckExtra2Changed()">
     </div>
 
     <div class="result-box">
         <div class="result-val" id="total_pay">¥ 0</div>
-        <pre id="detail_output">計算結果がここに表示されます</pre>
+        <pre id="detail_output"></pre>
+        <div id="grand_result_box" style="display:none;">
+            <h3 id="grand_title"></h3>
+            <div id="grand_info_text"></div>
+            <div class="result-val" id="grand_pay_val"></div>
+        </div>
     </div>
 </div>
 
