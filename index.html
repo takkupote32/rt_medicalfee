@@ -5,95 +5,190 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>放射線治療 診療報酬シミュレーター 2026</title>
     <style>
-        :root { --bg: #111827; --card: #1f2937; --accent: #2563eb; --text: #f9fafb; --text-sub: #9ca3af; }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 16px; }
+        :root { --bg: #111827; --card: #1f2937; --accent: #2563eb; --text: #ffffff; --text-sub: #9ca3af; }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 500px; margin: 0 auto; }
+        h1 { font-size: 1.25rem; color: var(--accent); margin-bottom: 20px; }
         .card { background: var(--card); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px solid #374151; }
-        label { display: block; margin: 16px 0 8px; color: var(--text-sub); font-size: 0.9rem; }
-        select, input { width: 100%; background: #374151; border: none; color: white; padding: 12px; border-radius: 8px; font-size: 1rem; }
-        .radio-group { display: flex; gap: 8px; margin-bottom: 16px; }
-        .radio-group label { flex: 1; text-align: center; background: #374151; padding: 12px; border-radius: 8px; cursor: pointer; margin: 0; }
-        input[type="radio"] { display: none; }
+        label { display: block; margin: 15px 0 8px; color: var(--text-sub); font-size: 0.9rem; }
+        select, input[type="number"] { width: 100%; background: #374151; border: 1px solid #4b5563; color: white; padding: 12px; border-radius: 8px; box-sizing: border-box; font-size: 1rem; }
+        .radio-group { display: flex; gap: 8px; }
+        .radio-group label { flex: 1; text-align: center; background: #374151; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
         input[type="radio"]:checked + label { background: var(--accent); }
-        .result-box { border: 2px solid var(--accent); padding: 20px; border-radius: 16px; text-align: center; }
-        .price { font-size: 2rem; font-weight: bold; margin: 10px 0; }
-        .btn-main { background: var(--accent); color: white; padding: 16px; width: 100%; border: none; border-radius: 12px; font-weight: bold; font-size: 1rem; margin-top: 10px; }
-        .expand-section { margin-top: 20px; border-top: 1px solid #374151; padding-top: 20px; }
-        pre { font-size: 0.75rem; background: #000; padding: 10px; border-radius: 8px; text-align: left; }
+        input[type="radio"] { display: none; }
+        .result-box { border: 2px solid var(--accent); border-radius: 16px; padding: 20px; text-align: center; margin-top: 20px; }
+        .total-price { font-size: 2.2rem; font-weight: bold; margin: 10px 0; }
+        .btn-blue { background: var(--accent); width: 100%; padding: 15px; border-radius: 12px; border: none; color: white; font-weight: bold; font-size: 1.1rem; margin-top: 20px; cursor: pointer; }
+        pre { font-size: 0.8rem; color: #ccc; text-align: left; background: #000; padding: 15px; border-radius: 8px; white-space: pre-wrap; }
+        .expand-toggle { color: var(--accent); text-align: center; margin-top: 15px; cursor: pointer; display: block; font-size: 0.9rem; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h2>放射線治療 診療報酬シミュレーター 2026</h2>
+    <h1>放射線治療 診療報酬シミュレーター 2026</h1>
     
     <div class="card">
         <label>照射方法</label>
-        <select id="main_method" onchange="calculate()"></select>
-
+        <select id="main_method" onchange="calculateAll()"></select>
+        
         <label>患者負担割合</label>
-        <div class="radio-group" onchange="calculate()">
+        <div class="radio-group" onchange="calculateAll()">
             <input type="radio" name="ratio" id="r1" value="1"><label for="r1">1割</label>
             <input type="radio" name="ratio" id="r2" value="2"><label for="r2">2割</label>
             <input type="radio" name="ratio" id="r3" value="3" checked><label for="r3">3割</label>
         </div>
 
         <label>患者区分</label>
-        <div class="radio-group" onchange="calculate()">
-            <input type="radio" name="pt" id="pt_out" value="外来" checked><label for="pt_out">外来</label>
-            <input type="radio" name="pt" id="pt_in" value="入院"><label for="pt_in">入院</label>
+        <div class="radio-group" onchange="calculateAll()">
+            <input type="radio" name="pt_type" id="pt_out" value="外来" checked><label for="pt_out">外来</label>
+            <input type="radio" name="pt_type" id="pt_in" value="入院"><label for="pt_in">入院</label>
         </div>
 
         <label>体外照射用固定器具</label>
-        <div class="radio-group" onchange="calculate()">
+        <div class="radio-group" onchange="calculateAll()">
             <input type="radio" name="fix" id="fix_n" value="なし" checked><label for="fix_n">なし</label>
             <input type="radio" name="fix" id="fix_y" value="あり"><label for="fix_y">作成あり</label>
         </div>
 
-        <div class="result-box">
-            <div class="price" id="total_price">¥ 0</div>
-            <pre id="detail_log">計算結果が表示されます</pre>
-            <button class="btn-main" onclick="calculate()">会計計算を実行</button>
-        </div>
+        <label>外来治療回数(加算用)</label>
+        <input type="number" id="count_input" value="1" oninput="calculateAll()">
     </div>
 
-    <div class="card expand-section">
-        <label><input type="checkbox" id="use_extra" onchange="toggleExtra()"> 2回目の計算として実行する</label>
-        <div id="extra_fields" style="display:none;">
-            <label>追加する照射方法</label>
-            <select id="ex_method" onchange="calculate()"></select>
-            <label>1回目 IGRT区分</label>
-            <select id="ex_igrt" onchange="calculate()"></select>
-            
-            <div class="result-box" style="margin-top:20px; border-color: #6b7280;">
-                <div class="price" id="extra_price">¥ 0</div>
-                <button class="btn-main" style="background:#4b5563;" onclick="calculate()">追加計算を実行</button>
-            </div>
+    <div class="result-box">
+        <div class="total-price" id="total_pay">¥ 0</div>
+        <pre id="detail_output">計算ボタンを押すと結果が表示されます</pre>
+        <button class="btn-blue" onclick="calculateAll()">会計計算を実行</button>
+        <span class="expand-toggle" onclick="toggleExtra()">追加・変更分のシミュレーションを開く ≫</span>
+    </div>
+
+    <div id="extra_section" class="card hidden" style="margin-top:20px; border-color: var(--accent);">
+        <label><input type="checkbox" id="check_extra"> 2回目の計算として実行する</label>
+        <label>追加する照射方法</label>
+        <select id="ex_method" onchange="calculateAll()"></select>
+        <label>1回目 IGRT区分</label>
+        <select id="ex_igrt" onchange="calculateAll()"></select>
+        
+        <div class="result-box" style="border-color:#6b7280;">
+            <div class="total-price" id="ex_total_pay">¥ 0</div>
+            <button class="btn-blue" style="background:#4b5563;" onclick="calculateAll()">追加計算をして合算を実行</button>
         </div>
     </div>
 </div>
 
 <script>
-    function toggleExtra() {
-        document.getElementById('extra_fields').style.display = document.getElementById('use_extra').checked ? 'block' : 'none';
-        calculate();
-    }
+
+var one_series_methods = ["前立腺VMAT", "全乳房(一連)", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+
+var outpatient_add_series = ["前立腺VMAT", "全乳房(一連)"];
+
+
+
+var no_igrt_list = ["1門照射", "対向2門", "非対向2門・3門照射", "ケロイド", "全乳房(一連)", "前立腺VMAT", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+
+var grid_fix_list = ["前立腺VMAT", "IMRT", "1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド"];
+
+var breath_list = ["IMRT", "肺定位SBRT", "全乳房(一連)", 
+
+"非対向2門・3門照射", "4門以上・運動・原体照射"];
+
+
+
+var extra_methods_1st = ["前立腺VMAT", "全乳房(一連)", "IMRT", "1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド", "肺定位SBRT", "脳定位SRT", "全身照射TBI", "緩和寡分割"];
+
+var extra_methods_2nd = ["1門照射", "対向2門", "非対向2門・3門照射", "4門以上・運動・原体照射", "ケロイド"];
+
+
+
+var lastMainMethod = "";
+
+var lastExMethod = "";
+
+
+
+window.onload = function() {
+
+    updateExtraOptions();
+
+    document.getElementById("main_method").value = "前立腺VMAT";
+
+    document.getElementById("fix_exist").checked = true;
+
+    calculateAll();
+
+};
+
+
+
+function toggleExpand() {
+
+    var isChecked = document.getElementById("is_expanded").checked;
+
+    document.getElementById("expanded_content").style.display = isChecked ? "block" : "none";
+
+    calculateAll();
+
+}
+
+
+
+function onCheckExtra2Changed() {
+
+    updateExtraOptions();
+
+    calculateAll();
+
+}
+
+
+
+function updateExtraOptions() {
+
+    var check2 = document.getElementById("check_extra_2").checked;
+
+    var exMethodSel = document.getElementById("ex_method");
+
+    if (!exMethodSel) return;
+
     
-    function calculate() {
-        // ここにロジックを実装してください
-        console.log("計算ロジック実行");
+
+    var currentVal = exMethodSel.value;
+
+    exMethodSel.innerHTML = "";
+
+    
+
+    var list = check2 ?
+
+    extra_methods_2nd : extra_methods_1st;
+
+    for(var i=0; i<list.length; i++) {
+
+        var opt = document.createElement("option");
+
+        opt.value = list[i];
+
+        opt.innerText = list[i];
+
+        exMethodSel.appendChild(opt);
+
     }
-    function updateExtraOptions() {
-        var check2 = document.getElementById("check_extra_2").checked;
-        var exMethodSel = document.getElementById("ex_method");
-        var currentVal = exMethodSel.value;
-        exMethodSel.innerHTML = "";
-        var list = check2 ? extra_methods_2nd : extra_methods_1st;
-        list.forEach(m => {
-            let opt = document.createElement("option"); opt.value = m; opt.text = m; exMethodSel.add(opt);
-        });
-        if(list.indexOf(currentVal) !== -1) exMethodSel.value = currentVal;
+
+    
+
+    if(list.indexOf(currentVal) !== -1) {
+
+        exMethodSel.value = currentVal;
+
+    } else {
+
+        exMethodSel.value = check2 ? "1門照射" : "IMRT";
+
     }
+
+}
+
+
 
 function calculateAll() {
 
@@ -393,21 +488,11 @@ function calculateAll() {
 
         if (pt_type === "外来") {
 
-            // ケロイドの場合は加算しない
+            var out_pts = count * 100;
 
-            if (method !== "ケロイド") {
+            base_pts += out_pts;
 
-                var out_pts = count * 100;
-
-                base_pts += out_pts;
-
-                formula_list.push("・外来放射線治療加算(100点) × " + count + "回: " + out_pts.toLocaleString() + "点");
-
-            } else {
-
-                formula_list.push("・外来放射線治療加算: 0点 (ケロイドは対象外)");
-
-            }
+            formula_list.push("・外来放射線治療加算(100点) × " + count + "回: " + out_pts.toLocaleString() + "点");
 
         }
 
@@ -661,25 +746,15 @@ function calculateAll() {
 
         if (pt_type === "外来" && !is_ex_one_series && !check_extra_2) {
 
-            // ケロイドの場合は加算しない
+            var ex_out_normal_pts = ex_count * 100;
 
-            if (ex_method !== "ケロイド") {
+            extra_pts += ex_out_normal_pts;
 
-                var ex_out_normal_pts = ex_count * 100;
-
-                extra_pts += ex_out_normal_pts;
-
-                extra_formula.push("・追加外来放射線治療加算(100点) × " + ex_count + "回: " + ex_out_normal_pts.toLocaleString() + "点");
-
-            } else {
-
-                extra_formula.push("・追加外来放射線治療加算: 0点 (ケロイドは対象外)");
-
-            }
+            extra_formula.push("・追加外来放射線治療加算(100点) × " + ex_count + "回: " + ex_out_normal_pts.toLocaleString() + "点");
 
         }
 
-        
+
 
         var extra_pay = extra_pts * 10 * (ratio / 10);
 
@@ -695,13 +770,13 @@ function calculateAll() {
 
         if (check_extra_2) {
 
-            document.getElementById("grand_title").innerText = "🟩【1回目会計 ＋ 2回目会計】総合計 (窓口負担額)";
+            document.getElementById("grand_title").innerText = "#### 🟩 【左側会計 ＋ 2回目会計】総合計 (窓口負担額)";
 
             document.getElementById("grand_info_text").innerHTML = "総点数: " + grand_total_pts.toLocaleString() + " 点 <br> (治療ベース: " + base_pts.toLocaleString() + "点 + 2回目追加: " + extra_pts.toLocaleString() + "点)";
 
         } else {
 
-            document.getElementById("grand_title").innerText = "🟩 追加分合算後の総合計 (窓口負担額)";
+            document.getElementById("grand_title").innerText = "#### 🟩 差額合算後の総合計 (窓口負担額)";
 
             document.getElementById("grand_info_text").innerHTML = "総点数: " + grand_total_pts.toLocaleString() + " 点 <br> (治療ベース: " + base_pts.toLocaleString() + "点 + 1回目追加: " + extra_pts.toLocaleString() + "点)";
 
@@ -713,10 +788,8 @@ function calculateAll() {
 
 }
 
+</script>
 
     
-    // ここに提供された計算ロジック（calculateAll関数など）をそのまま貼り付けてください
-    // ※ 前回提供された JS コードをここに入れるだけで完全に動作します
-</script>
 </body>
 </html>
